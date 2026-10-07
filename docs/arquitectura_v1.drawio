@@ -1,0 +1,122 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="arq-v1" name="Arquitectura v1">
+    <mxGraphModel dx="1414" dy="777" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1340" pageHeight="640" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;" value="&lt;b&gt;Cloud Provider Analytics — Arquitectura v1 (patrón Lambda)&lt;/b&gt;&lt;br&gt;Minería de Datos II · ISTEA · Versión 1.0 · 07/10/2026" vertex="1">
+          <mxGeometry height="45" width="900" x="20" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="src_batch" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" value="&lt;b&gt;Fuentes batch&lt;/b&gt;&lt;br&gt;7 CSV: maestros, billing,&lt;br&gt;tickets, NPS, marketing" vertex="1">
+          <mxGeometry height="80" width="200" x="20" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="src_stream" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;Fuente streaming&lt;/b&gt;&lt;br&gt;usage_events_stream&lt;br&gt;120 archivos JSONL" vertex="1">
+          <mxGeometry height="80" width="200" x="20" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="lake" parent="1" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=none;strokeColor=#5F5E5A;verticalAlign=top;align=center;fontSize=13;arcSize=4;" value="&lt;b&gt;Data Lake · Parquet en Google Drive&lt;/b&gt;" vertex="1">
+          <mxGeometry height="360" width="820" x="260" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="landing" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#2C2C2A;" value="&lt;b&gt;Landing&lt;/b&gt;&lt;br&gt;Raw inmutable&lt;br&gt;CSV / JSONL" vertex="1">
+          <mxGeometry height="80" width="120" x="280" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="ing_batch" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;fontColor=#3C3489;" value="&lt;b&gt;Ingesta batch&lt;/b&gt;&lt;br&gt;spark.read +&lt;br&gt;esquema explícito" vertex="1">
+          <mxGeometry height="70" width="170" x="440" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ing_stream" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5EE;strokeColor=#0F6E56;fontColor=#085041;" value="&lt;b&gt;Ingesta streaming&lt;/b&gt;&lt;br&gt;readStream + watermark&lt;br&gt;dedup event_id + checkpoint" vertex="1">
+          <mxGeometry height="80" width="170" x="440" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="bronze" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#2C2C2A;fontSize=11;" value="&lt;b&gt;Bronze&lt;/b&gt;&lt;br&gt;Tipado explícito&lt;br&gt;ingest_ts, source_file&lt;br&gt;part: event_date / month" vertex="1">
+          <mxGeometry height="90" width="130" x="640" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="silver" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#2C2C2A;fontSize=11;" value="&lt;b&gt;Silver&lt;/b&gt;&lt;br&gt;Limpio, v1+v2 unificado&lt;br&gt;joins + features" vertex="1">
+          <mxGeometry height="90" width="130" x="795" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="gold" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#2C2C2A;fontSize=11;" value="&lt;b&gt;Gold&lt;/b&gt;&lt;br&gt;Marts FinOps,&lt;br&gt;Soporte, Producto" vertex="1">
+          <mxGeometry height="90" width="120" x="945" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="quarantine" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEBEB;strokeColor=#A32D2D;fontColor=#791F1F;fontSize=11;" value="&lt;b&gt;Quarantine&lt;/b&gt;&lt;br&gt;Inválidos + dq_reason" vertex="1">
+          <mxGeometry height="60" width="130" x="795" y="335" as="geometry" />
+        </mxCell>
+        <mxCell id="analitica" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAEEDA;strokeColor=#854F0B;fontColor=#633806;" value="&lt;b&gt;Analítica / ML&lt;/b&gt;&lt;br&gt;Detección de anomalías&lt;br&gt;(percentiles / MAD)" vertex="1">
+          <mxGeometry height="75" width="190" x="1130" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="cassandra" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;size=12;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#2C2C2A;" value="&lt;b&gt;Cassandra / AstraDB&lt;/b&gt;&lt;br&gt;Keyspace + tablas&lt;br&gt;query-first" vertex="1">
+          <mxGeometry height="90" width="190" x="1130" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="consumo" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#5F5E5A;fontColor=#2C2C2A;" value="&lt;b&gt;Consumo&lt;/b&gt;&lt;br&gt;FinOps · Soporte · Producto&lt;br&gt;(herramientas de visualización)" vertex="1">
+          <mxGeometry height="75" width="190" x="1130" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="transversal" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1EFE8;strokeColor=#888780;fontColor=#2C2C2A;" value="&lt;b&gt;Capacidades transversales:&lt;/b&gt; calidad · metadatos · linaje · seguridad · observabilidad" vertex="1">
+          <mxGeometry height="45" width="1300" x="20" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_b" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EEEDFE;strokeColor=#534AB7;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="20" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_bt" parent="1" style="text;html=1;align=left;verticalAlign=middle;" value="Camino batch" vertex="1">
+          <mxGeometry height="30" width="120" x="48" y="525" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_s" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5EE;strokeColor=#0F6E56;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="180" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_st" parent="1" style="text;html=1;align=left;verticalAlign=middle;" value="Camino streaming" vertex="1">
+          <mxGeometry height="30" width="140" x="208" y="525" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_q" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FCEBEB;strokeColor=#A32D2D;" value="" vertex="1">
+          <mxGeometry height="20" width="20" x="360" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_qt" parent="1" style="text;html=1;align=left;verticalAlign=middle;" value="Registros inválidos (no se borran, no se agregan)" vertex="1">
+          <mxGeometry height="30" width="320" x="388" y="525" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="src_batch" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#534AB7;" target="landing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="src_stream" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0F6E56;" target="landing">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="landing" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#534AB7;" target="ing_batch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="landing" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0F6E56;" target="ing_stream">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="ing_batch" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#534AB7;" target="bronze">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="ing_stream" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;strokeColor=#0F6E56;" target="bronze">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="bronze" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="silver">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="silver" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="gold">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="bronze" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;dashed=1;strokeColor=#A32D2D;fontColor=#791F1F;fontSize=10;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="quarantine" value="no pasa reglas">
+          <mxGeometry relative="1" x="-0.0233" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="gold" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;entryX=0.5;entryY=1;entryDx=0;entryDy=0;">
+          <mxGeometry relative="1" x="-0.0146" as="geometry">
+            <Array as="points">
+              <mxPoint x="1078.4" y="215" />
+              <mxPoint x="1078.4" y="180" />
+              <mxPoint x="1210" y="180" />
+            </Array>
+            <mxPoint x="1070" y="215" as="sourcePoint" />
+            <mxPoint x="1210" y="155" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="gold" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="cassandra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="analitica" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="cassandra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="cassandra" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;" target="consumo">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

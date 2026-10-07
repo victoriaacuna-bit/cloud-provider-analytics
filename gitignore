@@ -1,0 +1,21 @@
+# Credenciales (nunca versionar)
+.env
+*.env
+secure-connect-*.zip
+config/*.secret.*
+*token*.json
+
+# Datos y salidas del pipeline
+data/*
+!data/README.md
+datalake/
+checkpoints/
+spark-warehouse/
+
+# Python y Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Sistema
+.DS_Store
