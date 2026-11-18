@@ -1,0 +1,6 @@
+service,daily_cost_usd,requests,events
+analytics,32.8759,493.0,6
+compute,11.5343,120.0,3
+database,19.4919,342.0,6
+genai,55.4541,364.0,6
+storage,5.2288,228.0,3

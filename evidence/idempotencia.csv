@@ -1,0 +1,7 @@
+,antes,despues,igual
+bronze_customers,80,80,True
+bronze_users,800,800,True
+bronze_billing,240,240,True
+bronze_eventos,43200,43200,True
+gold_mart,11050,11050,True
+cassandra,11050,11050,True

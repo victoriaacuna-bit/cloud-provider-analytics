@@ -1,0 +1,34 @@
+2026-11-18 19:09:13,707 | INFO | RUN_ID=20261118T190912Z | LANDING=/content/drive/MyDrive/Parcial Mineria de Datos II/Proyecto/cloud_provider_challenge_dataset_v1/datalake/landing
+2026-11-18 19:12:43,869 | INFO | [batch] customers_orgs: leidas=80 escritas=80
+2026-11-18 19:12:48,024 | INFO | [batch] users: leidas=800 escritas=800
+2026-11-18 19:12:50,811 | INFO | [batch] billing_monthly: leidas=240 escritas=240
+2026-11-18 19:17:49,659 | INFO | [stream] micro-lote 0: 3600 filas nuevas en Bronze
+2026-11-18 19:18:15,859 | INFO | [stream] micro-lote 1: 3600 filas nuevas en Bronze
+2026-11-18 19:18:43,024 | INFO | [stream] micro-lote 2: 3600 filas nuevas en Bronze
+2026-11-18 19:19:07,477 | INFO | [stream] micro-lote 3: 3600 filas nuevas en Bronze
+2026-11-18 19:19:33,107 | INFO | [stream] micro-lote 4: 3600 filas nuevas en Bronze
+2026-11-18 19:19:55,697 | INFO | [stream] micro-lote 5: 3600 filas nuevas en Bronze
+2026-11-18 19:20:20,473 | INFO | [stream] micro-lote 6: 3600 filas nuevas en Bronze
+2026-11-18 19:20:43,121 | INFO | [stream] micro-lote 7: 3600 filas nuevas en Bronze
+2026-11-18 19:21:09,896 | INFO | [stream] micro-lote 8: 3600 filas nuevas en Bronze
+2026-11-18 19:21:38,480 | INFO | [stream] micro-lote 9: 3600 filas nuevas en Bronze
+2026-11-18 19:22:09,165 | INFO | [stream] micro-lote 10: 3600 filas nuevas en Bronze
+2026-11-18 19:22:40,294 | INFO | [stream] micro-lote 11: 3600 filas nuevas en Bronze
+2026-11-18 20:01:10,845 | INFO | [serving] filas enviadas=11050 fallos=0
+2026-11-18 20:06:47,662 | INFO | [batch] customers_orgs: leidas=80 escritas=80
+2026-11-18 20:06:48,987 | INFO | [batch] users: leidas=800 escritas=800
+2026-11-18 20:06:50,210 | INFO | [batch] billing_monthly: leidas=240 escritas=240
+2026-11-18 20:07:42,627 | INFO | [stream] micro-lote 0: 0 filas nuevas en Bronze
+2026-11-18 20:08:28,870 | INFO | [stream] micro-lote 1: 0 filas nuevas en Bronze
+2026-11-18 20:08:59,510 | INFO | [stream] micro-lote 2: 0 filas nuevas en Bronze
+2026-11-18 20:09:30,312 | INFO | [stream] micro-lote 3: 0 filas nuevas en Bronze
+2026-11-18 20:10:00,030 | INFO | [stream] micro-lote 4: 0 filas nuevas en Bronze
+2026-11-18 20:10:29,715 | INFO | [stream] micro-lote 5: 0 filas nuevas en Bronze
+2026-11-18 20:11:00,405 | INFO | [stream] micro-lote 6: 0 filas nuevas en Bronze
+2026-11-18 20:11:28,405 | INFO | [stream] micro-lote 7: 0 filas nuevas en Bronze
+2026-11-18 20:11:55,389 | INFO | [stream] micro-lote 8: 0 filas nuevas en Bronze
+2026-11-18 20:12:24,614 | INFO | [stream] micro-lote 9: 0 filas nuevas en Bronze
+2026-11-18 20:12:53,087 | INFO | [stream] micro-lote 10: 0 filas nuevas en Bronze
+2026-11-18 20:13:21,605 | INFO | [stream] micro-lote 11: 0 filas nuevas en Bronze
+2026-11-18 20:13:30,509 | INFO | [serving] filas enviadas=11050 fallos=0
+2026-11-18 20:18:29,308 | INFO | Lake copiado a /content/drive/MyDrive/Parcial Mineria de Datos II/Proyecto/datalake_output

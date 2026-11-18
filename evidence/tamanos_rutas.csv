@@ -1,0 +1,12 @@
+tabla,archivos,particiones,MB
+bronze/customers_orgs,1,1,0.008
+bronze/users,1,1,0.025
+bronze/billing_monthly,3,3,0.024
+bronze/usage_events,5757,60,41.506
+silver/customers_orgs,1,1,0.007
+silver/billing_monthly,3,3,0.028
+silver/usage_events,60,60,2.667
+silver/usage_daily_features,60,60,0.56
+gold/org_daily_usage_by_service,60,60,0.656
+gold/cost_anomaly_mart,60,60,0.519
+quarantine/usage_events,205,58,1.62
