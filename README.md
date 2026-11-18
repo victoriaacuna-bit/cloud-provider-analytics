@@ -3,71 +3,104 @@
 **Proyecto Integrador · Minería de Datos II · ISTEA · 2.º cuatrimestre 2026**
 Profesor: Diego Mosquera · Autora: Victoria Acuña · Modalidad: individual
 
-Pipeline de datos para el área de datos de un proveedor de nube: ingesta batch y streaming con PySpark, Data Lake en Parquet (Landing → Bronze → Silver → Gold) y serving de marts analíticos en Cassandra/AstraDB para FinOps, Soporte y Producto.
+Pipeline de datos para un proveedor de nube: ingesta batch y streaming con PySpark, Data Lake en Parquet (Landing → Bronze → Silver → Gold) y serving en Cassandra/AstraDB.
 
 ---
 
 ## Estado del proyecto
 
-| Instancia | Fecha | Estado |
+| Fase | Fecha | Estado |
 |---|---|---|
-| 1.ª evaluación parcial: diseño y fundación | 07/10/2026 | **Entregada (v1.0)** |
-| 2.ª evaluación parcial: implementación técnica | 18/11/2026 | Pendiente |
-| Evaluación final: MVP integrado | 09/12/2026 | Pendiente |
+| Fase 1 · Diseño y fundación | 07/10/2026 | Entregada (v1.0) |
+| Fase 2 · Pipeline end-to-end mínimo | 18/11/2026 | **Entregada (v2.0)** |
+| Fase 3 · MVP integrado | 09/12/2026 | En curso (ver [`docs/backlog.md`](docs/backlog.md)) |
 
-## Documentación
+## Qué hace el pipeline hoy
 
-| Documento | Contenido |
+| Capa | Implementado |
 |---|---|
-| [`docs/diseno_entrega1.md`](docs/diseno_entrega1.md) | Documento de diseño de la primera entrega (ítems 1 a 12 de la consigna) |
-| [`docs/arquitectura_v1.png`](docs/arquitectura_v1.png) | Diagrama de arquitectura v1 |
-| [`DECISIONS.md`](DECISIONS.md) | Registro de decisiones técnicas, alternativas y trade-offs |
-| [`notebooks/01_exploracion_landing.ipynb`](notebooks/01_exploracion_landing.ipynb) | Exploración y perfil inicial de las fuentes (evidencia) |
+| Batch → Bronze | `customers_orgs`, `users` y `billing_monthly` con esquema explícito, `ingest_ts`, `source_file`, `run_id` y deduplicación por clave |
+| Streaming → Bronze | `usage_events_stream` con Structured Streaming: esquema explícito, watermark medido, `dropDuplicatesWithinWatermark(event_id)`, checkpoint y anti-join por clave natural |
+| Silver | Clientes (NPS validado), facturación (FX = 1 en USD, revenue neto) y eventos conformados, con 6 reglas de calidad, quarantine y join con clientes |
+| Features | `daily_cost_usd`, `requests`, `cpu_hours`, `storage_gb_hours`, `genai_tokens`, `carbon_kg` |
+| Gold | `org_daily_usage_by_service` (org × día × servicio) y `cost_anomaly_mart` |
+| Analítica | Z-score robusto (MAD) por organización y servicio |
+| Serving | Keyspace `cloud_analytics`, tabla query-first y 2 consultas CQL |
+| Idempotencia | Re-ejecución completa con conteos antes/después |
 
-## Arquitectura (resumen)
+### Resultados de la ejecución de referencia
 
-- **Patrón:** Lambda. Camino batch para maestros, facturación y encuestas; camino streaming para eventos de uso.
-- **Procesamiento:** PySpark (DataFrames y Structured Streaming).
-- **Almacenamiento:** Parquet particionado por fecha en Google Drive.
-- **Serving:** Cassandra/AstraDB con tablas modeladas por consulta (query-first).
+| Control | Resultado |
+|---|---|
+| Eventos Landing → Bronze | 43.200 → 43.200 (0 descartados, 0 duplicados) |
+| Bronze → Silver / Quarantine | 42.989 / 211 (costo < −0,01) |
+| Unidades imputadas | 2.038 |
+| Facturas USD con FX corregido | 160 |
+| NPS fuera de rango | 1 |
+| Filas Gold `org_daily_usage_by_service` | 11.050 (costo Silver = Gold = 148.351,58 USD) |
+| Anomalías de costo | 139 (1,3 %) |
+
+El detalle completo está en `evidence/run_summary.json`.
+
+## Quickstart
+
+### Requisitos
+
+| Herramienta | Versión |
+|---|---|
+| Google Colab | Runtime estándar Python 3 |
+| PySpark | 4.0.x (`pip install pyspark`) |
+| cassandra-driver | 3.29 o superior (`pip install cassandra-driver`) |
+| DataStax Astra DB | Base Serverless (plan gratuito) |
+
+### Pasos
+
+1. **Datos.** Copiar el dataset en Google Drive según [`data/README.md`](data/README.md).
+2. **Astra DB.** Crear una base Serverless, agregar el keyspace `cloud_analytics`, generar un Application Token (rol *Database Administrator*) y descargar el Secure Connect Bundle en `<BASE>/secrets/` de Drive.
+3. **Secretos.** En Colab, panel 🔑 *Secretos*: crear `ASTRA_TOKEN` con el token y habilitar el acceso al notebook.
+4. **Configuración.** Abrir [`notebooks/02_pipeline_end_to_end.ipynb`](notebooks/02_pipeline_end_to_end.ipynb) en Colab y revisar en la sección 0 las variables `BASE` (o la variable de entorno `CPA_BASE`) y `ASTRA_SCB`.
+5. **Ejecución.** *Entorno de ejecución → Ejecutar todas*. Tiempo aproximado: 25 minutos.
+6. **Verificación.** Comparar las salidas con la tabla de resultados de este README. La sección 7 debe mostrar `igual = True` en todas las capas.
+
+### Limpieza y reinicio
+
+La sección 9 del notebook cierra las conexiones. Para empezar de cero, descomentar sus líneas: borran el lake local y los checkpoints y vacían la tabla (`TRUNCATE`). Landing nunca se modifica.
+
+### Problemas frecuentes
+
+| Síntoma | Solución |
+|---|---|
+| `No encuentro LANDING` | Revisar `BASE` en la sección 0 |
+| `No encuentro el bundle` | Revisar que el nombre del `.zip` coincida con `ASTRA_SCB` |
+| `Unable to load a default connection class` | `!apt-get -qq install -y libev4 libev-dev` y reinstalar `cassandra-driver` |
+| Error de autenticación en Astra | El token debe estar en el secreto `ASTRA_TOKEN` y con acceso habilitado |
 
 ## Estructura del repositorio
 
 ```
 cloud-provider-analytics/
-├── README.md          Este archivo
-├── DECISIONS.md       Registro de decisiones
-├── .gitignore         Exclusión de credenciales y datos generados
-├── docs/              Documento de diseño y diagramas
-├── notebooks/         Exploración y prácticas
-└── data/              Instrucciones para obtener los datos (no se versionan)
+├── README.md                Este archivo
+├── DECISIONS.md             Registro de decisiones (D-01 a D-19)
+├── .gitignore
+├── cql/                     DDL y consultas CQL
+├── docs/                    Diseño, diagramas, gobierno y backlog
+├── notebooks/
+│   ├── 01_exploracion_landing.ipynb
+│   └── 02_pipeline_end_to_end.ipynb
+├── evidence/                Logs, conteos, tamaños, quarantine y consultas
+└── data/                    Instrucciones para obtener los datos
 ```
 
-Las carpetas `src/`, `tests/`, `config/` y `evidence/`, previstas en la sección 8.1 de la consigna, se incorporarán en la segunda entrega, junto con el código del pipeline.
+## Documentación
 
-## Requisitos
-
-| Herramienta | Versión |
+| Documento | Contenido |
 |---|---|
-| Google Colab | Runtime estándar de Python 3 |
-| PySpark | 4.0.4 (instalado con `pip install pyspark`) |
-| Google Drive | Para alojar el dataset y el Data Lake |
-
-## Cómo reproducir la exploración
-
-1. Obtener el dataset según [`data/README.md`](data/README.md) y ubicarlo en Google Drive en:
-   `MyDrive/Parcial Mineria de Datos II/Proyecto/cloud_provider_challenge_dataset_v1/datalake/landing`
-2. Abrir `notebooks/01_exploracion_landing.ipynb` en Google Colab.
-3. Ejecutar las celdas en orden. Colab solicitará permiso para montar Google Drive.
-4. Resultado esperado: perfil de las ocho fuentes (filas, esquema, nulos), chequeos de calidad de eventos y verificación de NPS y tipo de cambio. Las salidas de referencia están guardadas en el propio notebook.
-
-> **Nota:** Colab elimina el contenido de `/content/` al cerrar la sesión. Todos los datos de entrada y salida se mantienen en Google Drive.
+| [`docs/arquitectura_v2.png`](docs/arquitectura_v2.png) | Arquitectura implementada en la fase 2 |
+| [`DECISIONS.md`](DECISIONS.md) | Decisiones técnicas, alternativas y trade-offs |
+| [`docs/gobierno.md`](docs/gobierno.md) | Controles, metadatos, linaje, responsabilidades y acceso |
+| [`docs/backlog.md`](docs/backlog.md) | Backlog priorizado para el MVP |
+| [`docs/diseno_entrega1.md`](docs/diseno_entrega1.md) | Documento de diseño de la fase 1 |
 
 ## Seguridad
 
-Este repositorio no contiene credenciales ni datos sensibles. Las credenciales de AstraDB se gestionarán mediante variables de entorno y están excluidas por `.gitignore`.
-
-## Limitaciones actuales
-
-- La primera entrega es de diseño: no incluye todavía el código del pipeline.
-- El dataset es sintético y de volumen reducido; el diseño apunta al escenario productivo que representa.
+El repositorio no contiene credenciales. El token de Astra vive en los Secretos de Colab y el Secure Connect Bundle en Drive; ambos están excluidos por `.gitignore`.
